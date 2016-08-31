@@ -1,0 +1,12 @@
+steps:
+
+1. download postgres & postgresql 9.5
+2. in pgAdmin, create new database (e.g. makesense)
+3. edit path (will need to add something like export PATH=/Applications/Postgres.app/Contents/Versions/9.5/bin:$PATH)
+3. on command line, do `pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -C Documents/Gits/Makesense/data/latest.dump`
+4. on command line, do `psql -d makesense -U postgres -f Documents/Gits/Makesense/data/db.sql`
+
+
+to login to postgres, do `sudo -u postgres psql postgres`
+
+-d makesense -U postgres - f path/to/file
