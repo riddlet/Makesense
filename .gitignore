@@ -1,0 +1,10 @@
+*.DS_Store
+*.pyc
+*.Rhistory
+*.pdf
+.ipynb_checkpoints
+*.csv
+*json
+*.jpeg
+*.docx
+*.html
