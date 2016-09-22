@@ -14,6 +14,6 @@ To generate the data, navigate to the directory, and run:
 
 `./execute.sh arg1 arg2 arg3`
 
-`arg1` = your database user name
-`arg2` = your database password
-`arg3` = your facebook access token.
+`arg1` = your database user name 
+`arg2` = your database password 
+`arg3` = your facebook access token 
