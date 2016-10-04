@@ -17,16 +17,16 @@ sql = """Select * FROM events_participants"""
 cur.execute(sql)
 colnames = [desc[0] for desc in cur.description]
 df_event_participants = pd.DataFrame(cur.fetchall(), columns=colnames)
-df_event_participants.to_csv('../data/event_participants.csv', index=False)
+df_event_participants.to_csv('data/event_participants.csv', index=False)
 
 sql = """Select * FROM events"""
 cur.execute(sql)
 colnames = [desc[0] for desc in cur.description]
 df_events = pd.DataFrame(cur.fetchall(), columns=colnames)
-df_events.to_csv('../data/events.csv', index=False)
+df_events.to_csv('data/events.csv', index=False)
 
 sql = """Select * FROM users"""
 cur.execute(sql)
 colnames = [desc[0] for desc in cur.description]
 df_users = pd.DataFrame(cur.fetchall(), columns=colnames)
-df_users.to_csv('../data/users.csv', index=False)
+df_users.to_csv('data/users.csv', index=False)

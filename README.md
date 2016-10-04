@@ -1,10 +1,14 @@
 # Makesense
 
-Code for makesense exploration.
+Code for MakeSense exploration.
 
-To produce the data files that generate the presentation, you will need:
+First, this report was built using the Anaconda 4.0 distribution of Python 2.7.12 and R version 3.3.1. To run this code, you will need to have Python and R installed on your machine.
 
-1. A dump of the sql database
+In addition, you will need to run the setup script before anything else can be done. This script installs the needed dependencies on your machine. To run this script, navigate to the head directory and run `./setup.sh`.
+
+To produce the data files and generate the report, you will need:
+
+1. A dump of the sql database (stored in the `data` directory)
 2. a user name and password for connecting to the database
 3. An access key for facebooks's graph api.
 

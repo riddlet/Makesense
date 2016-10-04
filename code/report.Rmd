@@ -1,0 +1,88 @@
+---
+title: "MakeSense report"
+author: "Travis Riddle"
+date: "October 4, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This report contains the primary plots I generated for MakeSense during my time working with them in Mexico City. The details here represent my efforts to better understand the MakeSense data and ecosystem, including activity on facebook. For the facebook data, I queried the facebook GraphAPI to obtain data from the MakeSense user group (https://www.facebook.com/MakeSenseorg). The MakeSense data is from the data dump that is located in the data folder of the directory containing this report.
+
+```{r facebook_contacts, fig.cap="Figure 1: Log of the number of contacts made for each event, where contacts is hte sum of the number of people who said they were attending, the number of people who said they were interested, the number of people who replied with 'maybe' and the number of people who did not reply.", message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+df <- read.csv('../data/fbdat.csv')
+df <- arrange(df, id)
+df$date_bin <- floor_date(as_date(df$start_time), unit='month')
+df %<>%
+  group_by(date_bin) %>%
+  mutate(n_events = length(contacts))
+df.past <- df[which(as_date(df$start_time)<today()),]
+ggplot(df.past, aes(x=as_date(start_time), y=log(contacts))) + 
+  stat_smooth(method='lm') + geom_point() + theme_bw() + 
+  ylab('Log of contacts') + xlab('Date')
+```
+
+One unfortunate property of the facebook data is that there are a number of variables contained in the data whose meanings aren't entirely clear. For instance, what's the difference between someone saying that they are 'interested' and someone replying with a 'maybe'. Also, we have no way of knowing if and when facebook changed their platform over this timeframe. This is a problem because anything we see in the data could be due to natural differences in user behavior, or it could be due to differences in user behavior caused by facebook's platform changes.
+
+```{r facebook attenders, fig.cap='Figure 2: Log of the number of people who said they were attending each event', message=FALSE, warning=FALSE}
+ggplot(df.past, aes(x=as_date(start_time), y=log(attending_count))) + 
+  stat_smooth(method='lm') + geom_point() + theme_bw() + 
+  ylab('Log of attendees') + xlab('Date')
+```
+
+As I pointed out to Alix, counting up the number of people who attend events doesn't seem terribly informative to me. Having lots of people attend a given event doesn't necessarily mean that MakeSense is successful in meeting it's goals
+
+```{r facebook interested people, fig.cap='Figure 3: Log of the number of people who said they were interested in each event', message=FALSE, warning=FALSE}
+ggplot(df.past, aes(x=as_date(start_time), y=log(interested_count))) + 
+  stat_smooth(method='lm') + geom_point() + theme_bw() + 
+  ylab('Log of attendees') + xlab('Date')
+```
+
+The same can be said of having lots of people interested.
+
+```{r facebook number of events, fig.cap='Figure 4: Number of events per month', message=FALSE, warning=FALSE}
+ggplot(df.past, aes(date_bin, n_events)) + geom_line() + theme_bw() + 
+  ylab('Number of events') + xlab('Date')
+```
+
+As such, I think looking at the number of events is a better measure of how you're doing. Remember, it's important to keep in mind seasonality effects (e.g. it appears that people are less likely to participate in things over the summer and over the winter holidays.)
+
+```{r Makesense, fig.cap='Figure 5: Number of events per week in the Makesense data dump', message=FALSE, warning=FALSE}
+df.events <- read.csv('../data/events.csv')
+df.event_parts <- read.csv('../data/event_participants.csv')
+
+names(df.event_parts)[1] <- 'id'
+df.events %<>%
+  select(id, from) %>%
+  right_join(df.event_parts) %>%
+  arrange(from)
+
+plot.dat <- df.events %>%
+  group_by(id) %>%
+  mutate(participants = length(user_id)) %>%
+  unique()
+
+plot.dat$date_bin <- floor_date(as_date(plot.dat$from), unit='week')
+plot.dat %<>%
+  group_by(date_bin) %>%
+  mutate(n_events = length(date_bin))
+plot.dat <- plot.dat[plot.dat$date_bin<today(),]
+
+### number of events
+ggplot(plot.dat, aes(x=date_bin, y=n_events)) + geom_line() + 
+  ylab('Number of Events per week') + theme_bw() + 
+  xlab('Date')
+```
+
+Unfortunately (at least as of this writing), the usage of the MakeSense platform is at pretty low levels. This is despite the relative growth (evident by the facebook data). Ideally, one could use this same metric to chart the success of the MakeSense platform. However, the usage levels are too low to draw any substantive conclusions.
+
+### Summary
+My recommendation for the moment is to do things to shift users onto the MakeSense platform, as it's difficult to rely on Facebook data due to the issues I raised above (plus some others that I didn't). Changing the behavior of users isn't easy, but it's the only way that you'll have guaranteed access to the data you want, and have full control over the user experience.
+
+To measure user behavior on your platform in the current context, I would switch your metric to something that captures more of what people are doing. So number of sessions, length of sessions, number of clicks on your platform, etc. Just because users aren't creating events on MakeSense doesn't necessarily mean that they aren't visiting, it could just mean that they're coming, clicking around a bit, and then leaving without taking any full actions.
+
